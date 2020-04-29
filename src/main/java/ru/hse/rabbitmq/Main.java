@@ -68,7 +68,7 @@ public class Main extends Application {
     }
 
     private void startAsClient(String userName, String address, String channel, Stage stage) {
-        Chat chat = new Chat(userName);
+        Chat chat = new Chat(channel, userName);
         Publisher.init(address, chat);
         Receiver.init(address, chat);
         chat.start(channel, stage);

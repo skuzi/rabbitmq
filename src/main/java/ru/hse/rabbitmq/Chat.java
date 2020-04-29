@@ -23,10 +23,12 @@ import java.util.function.Consumer;
 public class Chat implements Ui {
     private final ObservableList<String> msgs = FXCollections.<String>observableArrayList();
     private final String userName;
+    private final String channel;
     private BiConsumer<String, String> msgCallback;
     private Consumer<String> subscribeCallback;
 
-    public Chat(String userName) {
+    public Chat(String channel, String userName) {
+        this.channel = channel;
         this.userName = userName;
     }
 
@@ -96,7 +98,7 @@ public class Chat implements Ui {
     private void sendMessage(String time, TextField message) {
         msgs.add("<" + time + ">" + "[" + userName + "]" + ": " + message.getCharacters().toString());
         if (msgCallback != null) {
-            msgCallback.accept(userName, message.getCharacters().toString());
+            msgCallback.accept(channel, message.getCharacters().toString());
         }
         message.clear();
         message.requestFocus();
