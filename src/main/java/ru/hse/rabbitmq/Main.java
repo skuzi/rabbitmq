@@ -12,9 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    public static void printUsage() {
-        System.err.println("Usage: ./gradlew run --args='username [host] port'"); //TODO
-    }
 
     public static void main(String[] args) {
         launch();
@@ -37,10 +34,14 @@ public class Main extends Application {
         Label lblServer = new Label("Address");
         TextField tfServer = new TextField();
 
+        Label lbChannel = new Label("channel name");
+        TextField tfChannel = new TextField();
+
         Button btnBecomeClient = new Button("Start");
         btnBecomeClient.setOnMouseClicked(event -> startAsClient(
                 tfName.getCharacters().toString(),
                 tfServer.getCharacters().toString(),
+                tfChannel.getCharacters().toString(),
                 stage
         ));
 
@@ -53,7 +54,9 @@ public class Main extends Application {
         grid.add(tfName, 1, 0);
         grid.add(lblServer, 0, 1);
         grid.add(tfServer, 1, 1);
-        grid.add(hbButtons, 0, 2, 2, 1);
+        grid.add(lbChannel, 0, 2);
+        grid.add(tfChannel, 1, 2);
+        grid.add(hbButtons, 0, 3, 2, 1);
 
         Scene scene = new Scene(grid);
         stage.setTitle("memessenger");
@@ -64,6 +67,10 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void startAsClient(String userName, String address, Stage stage) {
+    private void startAsClient(String userName, String address, String channel, Stage stage) {
+        Chat chat = new Chat(userName);
+        Publisher.init(address, chat);
+        Receiver.init(address, chat);
+        chat.start(stage);
     }
 }

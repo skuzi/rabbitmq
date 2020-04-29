@@ -10,7 +10,7 @@ public class Receiver {
     private static final ConnectionFactory factory = new ConnectionFactory();
     private static Ui ui;
 
-    private static void init(String serverName, Ui ui) {
+    public static void init(String serverName, Ui ui) {
         factory.setHost(serverName);
         ui.setSubscribeCallback(Receiver::subscribe);
         Receiver.ui = ui;
