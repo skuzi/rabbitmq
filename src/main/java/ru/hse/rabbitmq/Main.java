@@ -71,6 +71,6 @@ public class Main extends Application {
         Chat chat = new Chat(userName);
         Publisher.init(address, chat);
         Receiver.init(address, chat);
-        chat.start(stage);
+        chat.start(channel, stage);
     }
 }

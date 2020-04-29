@@ -23,13 +23,18 @@ import java.util.function.Consumer;
 public class Chat implements Ui {
     private final ObservableList<String> msgs = FXCollections.<String>observableArrayList();
     private final String userName;
-    private BiConsumer<String, String> callback;
+    private BiConsumer<String, String> msgCallback;
+    private Consumer<String> subscribeCallback;
 
     public Chat(String userName) {
         this.userName = userName;
     }
 
-    public void start(Stage stage) {
+    public void start(String channel, Stage stage) {
+        if (subscribeCallback != null) {
+            subscribeCallback.accept(channel);
+        }
+
         ListView<String> seasons = new ListView<>(msgs);
         seasons.setOrientation(Orientation.VERTICAL);
 
@@ -80,18 +85,18 @@ public class Chat implements Ui {
 
     @Override
     public void setSendCallback(BiConsumer<String, String> callback) {
-        this.callback = callback;
+        this.msgCallback = callback;
     }
 
     @Override
     public void setSubscribeCallback(Consumer<String> callback) {
-
+        this.subscribeCallback = callback;
     }
 
     private void sendMessage(String time, TextField message) {
         msgs.add("<" + time + ">" + "[" + userName + "]" + ": " + message.getCharacters().toString());
-        if (callback != null) {
-            callback.accept(userName, message.getCharacters().toString());
+        if (msgCallback != null) {
+            msgCallback.accept(userName, message.getCharacters().toString());
         }
         message.clear();
         message.requestFocus();
