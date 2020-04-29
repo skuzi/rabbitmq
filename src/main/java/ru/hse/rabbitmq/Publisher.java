@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class Publisher {
-    private static final ConnectionFactory factory = new ConnectionFactory();
+    private final ConnectionFactory factory = new ConnectionFactory();
 
-    public static void init(String serverName, Ui ui) {
+    public void init(String serverName, Ui ui) {
         factory.setHost(serverName);
-        ui.setSendCallback(Publisher::publish);
+        ui.setSendCallback(this::publish);
     }
 
-    private static void publish(String channelName, String message) {
+    private void publish(String channelName, String message) {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();

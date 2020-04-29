@@ -7,16 +7,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
 public class Receiver {
-    private static final ConnectionFactory factory = new ConnectionFactory();
-    private static Ui ui;
+    private final ConnectionFactory factory = new ConnectionFactory();
+    private Ui uiField;
 
-    public static void init(String serverName, Ui ui) {
+    public void init(String serverName, Ui ui) {
         factory.setHost(serverName);
-        ui.setSubscribeCallback(Receiver::subscribe);
-        Receiver.ui = ui;
+        ui.setSubscribeCallback(this::subscribe);
+        uiField = ui;
     }
 
-    private static void subscribe(String channelName)  {
+    private void subscribe(String channelName)  {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
@@ -27,7 +27,7 @@ public class Receiver {
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                ui.displayMsg(channelName, message);
+                uiField.displayMsg(channelName, message);
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });

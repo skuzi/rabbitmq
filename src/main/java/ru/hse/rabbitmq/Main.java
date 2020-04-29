@@ -41,8 +41,7 @@ public class Main extends Application {
         btnBecomeClient.setOnMouseClicked(event -> startAsClient(
                 tfName.getCharacters().toString(),
                 tfServer.getCharacters().toString(),
-                tfChannel.getCharacters().toString(),
-                stage
+                tfChannel.getCharacters().toString()
         ));
 
 
@@ -67,10 +66,10 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void startAsClient(String userName, String address, String channel, Stage stage) {
+    private void startAsClient(String userName, String address, String channel) {
         Chat chat = new Chat(channel, userName);
-        Publisher.init(address, chat);
-        Receiver.init(address, chat);
-        chat.start(channel, stage);
+        new Publisher().init(address, chat);
+        new Receiver().init(address, chat);
+        chat.start(channel, new Stage());
     }
 }
