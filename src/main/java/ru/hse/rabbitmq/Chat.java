@@ -73,12 +73,12 @@ public class Chat implements Ui {
     }
 
     @Override
-    public void displayMsg(String message) {
+    public void displayMsg(String channelName, String message) {
         Platform.runLater(() -> msgs.addAll(message));
     }
 
     @Override
-    public void setCallback(BiConsumer<String, String> callback) {
+    public void setSendCallback(BiConsumer<String, String> callback) {
         this.callback = callback;
     }
 
