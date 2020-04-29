@@ -97,7 +97,6 @@ public class Chat implements Ui {
 
     private void sendMessage(String time, TextField message) {
         String formattedMsg = "<" + time + ">" + "[" + userName + "]" + ": " + message.getCharacters().toString();
-        msgs.add(formattedMsg);
         if (msgCallback != null) {
             msgCallback.accept(channel, formattedMsg);
         }
