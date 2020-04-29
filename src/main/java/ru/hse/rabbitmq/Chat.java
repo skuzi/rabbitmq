@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Chat implements Ui {
     private final ObservableList<String> msgs = FXCollections.<String>observableArrayList();
@@ -80,6 +81,11 @@ public class Chat implements Ui {
     @Override
     public void setSendCallback(BiConsumer<String, String> callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public void setSubscribeCallback(Consumer<String> callback) {
+
     }
 
     private void sendMessage(String time, TextField message) {
