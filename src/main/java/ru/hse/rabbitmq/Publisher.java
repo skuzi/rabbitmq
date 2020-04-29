@@ -17,7 +17,8 @@ public class Publisher {
     }
 
     private static void publish(String channelName, String message) {
-        try (Connection connection = factory.newConnection()) {
+        try {
+            Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
             channel.exchangeDeclare(channelName, BuiltinExchangeType.FANOUT);
             channel.basicPublish(channelName, "", null, message.getBytes());

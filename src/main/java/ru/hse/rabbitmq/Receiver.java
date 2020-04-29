@@ -17,7 +17,8 @@ public class Receiver {
     }
 
     private static void subscribe(String channelName)  {
-        try (Connection connection = factory.newConnection()) {
+        try {
+            Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
             channel.exchangeDeclare(channelName, BuiltinExchangeType.FANOUT);
