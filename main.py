@@ -1,10 +1,8 @@
-# pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
-from __future__ import print_function
-
 import base64
 import json
 import os.path
 import socketserver
+import sys
 import webbrowser
 from http.server import BaseHTTPRequestHandler
 import urllib.parse
@@ -39,12 +37,15 @@ auth_state = ""  # GLOBAL
 
 
 def main():
-    CLIENT_ID = "788835257396-kgu68qak4ku4f2tsap06q8dcire73sph.apps.googleusercontent.com"
-    CLIENT_SECRET = "uU9KieYAKPYOBV1dzZhGUPgR"  # sorry for this
+    if (len(sys.argv) < 3):
+        print("USAGE: {} client_id client_secret".format(sys.argv[0]))
+        return
+
+    CLIENT_ID = sys.argv[1]
+    CLIENT_SECRET = sys.argv[2]
 
     authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
     tokenEndpoint = "https://oauth2.googleapis.com/token"
-    userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
 
     state = uuid4()
 
