@@ -113,10 +113,10 @@ def main():
     while True:
         r = requests.get(url=api_url, params=params)
         data = r.json()
-        if "nextPageToken" not in data:
-            break
         for item in data["items"]:
             print(item["title"])
+        if "nextPageToken" not in data:
+            break
         params["pageToken"] = data["nextPageToken"]
 
 
