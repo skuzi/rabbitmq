@@ -108,6 +108,17 @@ def main():
     access_token = r.json()["access_token"]
     print("access_token: ", access_token)
 
+    api_url = "https://www.googleapis.com/drive/v2/files"
+    params = {"access_token": access_token, "maxResults": 50}
+    while True:
+        r = requests.get(url=api_url, params=params)
+        data = r.json()
+        if "nextPageToken" not in data:
+            break
+        for item in data["items"]:
+            print(item["title"])
+        params["pageToken"] = data["nextPageToken"]
+
 
 if __name__ == '__main__':
     main()
