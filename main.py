@@ -40,29 +40,6 @@ def code_verifier_gen(n_bytes=64):
 
 
 def main():
-    PORT = 25563
-
-    redirectURI = "http://localhost:" + str(PORT)  # unused port 25563
-
-    authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
-    tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token"
-    userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
-
-    state = uuid4()
-    code_verifier = code_verifier_gen()
-    code_challenge = code_verifier
-    code_challenge_method = "plain"
-
-    authorizationRequest = "{0}?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}".format(
-        authorizationEndpoint,
-        redirectURI,
-        "788835257396-kgu68qak4ku4f2tsap06q8dcire73sph.apps.googleusercontent.com",  # Client id
-        state,
-        code_challenge,
-        code_challenge_method
-    )
-
-    webbrowser.open(authorizationRequest)
 
     class Handler(BaseHTTPRequestHandler):
         def _set_response(self):
@@ -76,17 +53,41 @@ def main():
             if ("error" in parsed or ("code" not in parsed or "state" not in parsed)):
                 print("ERROR")
                 return
-            code = parsed["code"]
-            state = parsed["state"]
+            code = parsed["code"][0]
+            state = parsed["state"][0]
 
             print("AUTH CODE: ", code)
             print("incoming state: ", state)
 
             self._set_response()
-            self.wfile.write("auth_code: {}\nincoming_scope".encode('utf-8'))
+            self.wfile.write("auth code: {} \n incoming state: {}".format(code, state).encode('utf-8'))
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    with socketserver.TCPServer(("", 0), Handler) as httpd:
+        PORT = httpd.server_address[1]
         print("serving at port", PORT)
+
+        redirectURI = "http://localhost:" + str(PORT)  # unused port 25563
+
+        authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+        tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token"
+        userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+        state = uuid4()
+        code_verifier = code_verifier_gen()
+        code_challenge = code_verifier
+        code_challenge_method = "plain"
+
+        authorizationRequest = "{0}?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}".format(
+            authorizationEndpoint,
+            redirectURI,
+            "788835257396-kgu68qak4ku4f2tsap06q8dcire73sph.apps.googleusercontent.com",  # Client id
+            state,
+            code_challenge,
+            code_challenge_method
+        )
+
+        webbrowser.open(authorizationRequest)
+
         httpd.handle_request()
 
 
