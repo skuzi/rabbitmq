@@ -39,8 +39,11 @@ def code_verifier_gen(n_bytes=64):
         return verifier
 
 
-def main():
+auth_code = ""  # GLOBAL
+auth_state = ""  # GLOBAL
 
+
+def main():
     class Handler(BaseHTTPRequestHandler):
         def _set_response(self):
             self.send_response(200)
@@ -56,8 +59,10 @@ def main():
             code = parsed["code"][0]
             state = parsed["state"][0]
 
-            print("AUTH CODE: ", code)
-            print("incoming state: ", state)
+            global auth_code
+            global auth_state
+            auth_code = code
+            auth_state = state
 
             self._set_response()
             self.wfile.write("auth code: {} \n incoming state: {}".format(code, state).encode('utf-8'))
@@ -89,6 +94,12 @@ def main():
         webbrowser.open(authorizationRequest)
 
         httpd.handle_request()
+
+    global auth_code
+    global auth_state
+
+    print("AUTH CODE: ", auth_code)
+    print("incoming state: ", auth_state)
 
 
 if __name__ == '__main__':
