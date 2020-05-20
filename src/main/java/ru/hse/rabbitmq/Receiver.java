@@ -2,6 +2,7 @@ package ru.hse.rabbitmq;
 
 import com.rabbitmq.client.*;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
@@ -10,8 +11,11 @@ public class Receiver {
     private final ConnectionFactory factory = new ConnectionFactory();
     private Ui uiField;
 
-    public void init(String serverName, Ui ui) {
+    public void init(String serverName, Ui ui, SSLContext context) {
         factory.setHost(serverName);
+        factory.setPort(5671);
+        factory.useSslProtocol(context);
+//        factory.enableHostnameVerification();
         ui.setSubscribeCallback(this::subscribe);
         uiField = ui;
     }

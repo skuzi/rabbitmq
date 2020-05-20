@@ -5,14 +5,18 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class Publisher {
     private final ConnectionFactory factory = new ConnectionFactory();
 
-    public void init(String serverName, Ui ui) {
+    public void init(String serverName, Ui ui, SSLContext context) {
         factory.setHost(serverName);
+        factory.setPort(5671);
+        factory.useSslProtocol(context);
+//        factory.enableHostnameVerification();
         ui.setSendCallback(this::publish);
     }
 
