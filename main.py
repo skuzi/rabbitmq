@@ -114,7 +114,7 @@ def main():
         r = requests.get(url=api_url, params=params)
         data = r.json()
         for item in data["items"]:
-            if data["shared"]:
+            if item["shared"]:
                 print(item["title"])
         if "nextPageToken" not in data:
             break
