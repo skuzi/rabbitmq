@@ -8,6 +8,7 @@ import pickle
 import os.path
 import socketserver
 import webbrowser
+from http.server import BaseHTTPRequestHandler
 from uuid import uuid4
 
 from googleapiclient.discovery import build
@@ -60,13 +61,31 @@ def main():
 
     webbrowser.open(authorizationRequest)
 
-    Handler = http.server.SimpleHTTPRequestHandler
+    class Handler(BaseHTTPRequestHandler):
+        def _set_response(self):
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+
+        def do_GET(self):
+            print("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+            self._set_response()
+            self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
+
+        def do_POST(self):
+            content_length = int(self.headers['Content-Length'])  # <--- Gets the size of data
+            post_data = self.rfile.read(content_length)  # <--- Gets the data itself
+            print("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
+                         str(self.path), str(self.headers), post_data.decode('utf-8'))
+
+            self._set_response()
+            self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("serving at port", PORT)
         httpd.serve_forever()
     return
-    
+
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.
     """
