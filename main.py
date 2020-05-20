@@ -44,7 +44,7 @@ def main():
     class Handler(BaseHTTPRequestHandler):
         def _set_response(self):
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
         def do_GET(self):
@@ -60,7 +60,7 @@ def main():
             print("incoming state: ", state)
 
             self._set_response()
-            self.wfile.write("auth code: {} \n incoming state: {}".format(code, state).encode('utf-8'))
+            self.wfile.write("auth code: {}\nincoming state: {}".format(code, state).encode('utf-8'))
 
     with socketserver.TCPServer(("", 0), Handler) as httpd:
         PORT = httpd.server_address[1]
