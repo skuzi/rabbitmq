@@ -2,19 +2,14 @@
 from __future__ import print_function
 
 import base64
-import http
-import io
-import pickle
+import json
 import os.path
 import socketserver
 import webbrowser
 from http.server import BaseHTTPRequestHandler
 import urllib.parse
 from uuid import uuid4
-
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
+import requests
 
 
 def code_verifier_gen(n_bytes=64):
@@ -44,6 +39,15 @@ auth_state = ""  # GLOBAL
 
 
 def main():
+    CLIENT_ID = "788835257396-kgu68qak4ku4f2tsap06q8dcire73sph.apps.googleusercontent.com"
+    CLIENT_SECRET = "uU9KieYAKPYOBV1dzZhGUPgR"  # sorry for this
+
+    authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+    tokenEndpoint = "https://oauth2.googleapis.com/token"
+    userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+    state = uuid4()
+
     class Handler(BaseHTTPRequestHandler):
         def _set_response(self):
             self.send_response(200)
@@ -53,7 +57,7 @@ def main():
         def do_GET(self):
             query = "http://localhost" + self.path
             parsed = urllib.parse.parse_qs(urllib.parse.urlparse(query).query)
-            if ("error" in parsed or ("code" not in parsed or "state" not in parsed)):
+            if "error" in parsed or ("code" not in parsed or "state" not in parsed):
                 print("ERROR")
                 return
             code = parsed["code"][0]
@@ -73,22 +77,11 @@ def main():
 
         redirectURI = "http://localhost:" + str(PORT)  # unused port 25563
 
-        authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth"
-        tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token"
-        userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
-
-        state = uuid4()
-        code_verifier = code_verifier_gen()
-        code_challenge = code_verifier
-        code_challenge_method = "plain"
-
-        authorizationRequest = "{0}?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}".format(
+        authorizationRequest = "{0}?response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&redirect_uri={1}&client_id={2}&state={3}".format(
             authorizationEndpoint,
             redirectURI,
-            "788835257396-kgu68qak4ku4f2tsap06q8dcire73sph.apps.googleusercontent.com",  # Client id
-            state,
-            code_challenge,
-            code_challenge_method
+            CLIENT_ID,
+            state
         )
 
         webbrowser.open(authorizationRequest)
@@ -100,6 +93,19 @@ def main():
 
     print("AUTH CODE: ", auth_code)
     print("incoming state: ", auth_state)
+
+    r = requests.post(tokenEndpoint,
+                      data={
+                          'client_id': CLIENT_ID,
+                          'client_secret': CLIENT_SECRET,
+                          'code': auth_code,
+                          'grant_type': 'authorization_code',
+                          'redirect_uri': redirectURI
+                      }
+                      )
+    print("Response: ", r.text)
+    access_token = r.json()["access_token"]
+    print("access_token: ", access_token)
 
 
 if __name__ == '__main__':
